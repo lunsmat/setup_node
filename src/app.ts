@@ -1,4 +1,5 @@
 import express from 'express';
+import routes from './routes';
 
 class App {
     public express: express.Application;
@@ -14,8 +15,7 @@ class App {
     }
 
     private routes() {
-        this.express
-            .get('/ping', (req, res) => res.json({ pong: 'true' }));
+        this.express.use(routes);
     }
 }
 

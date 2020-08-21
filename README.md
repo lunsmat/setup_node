@@ -61,4 +61,95 @@ To commit I ignore node_modules in .gitignore
 
 (4° Commit)
 
-Now the project can was can use typescript, first was installed typescript like a dev depedencie with `yarn add typescript -D`, so I use `yarn tsc --init` to create a tsconfig.json (the file with the config of typescript). With typescript I added types in some parts of app, but the express doesn't have a type, so I install types of expresss with(like a dev depedencie to not go to production) `yarn add @types/express -D`, after to start the server I added a depedencie to run typescript, the depedencie is ts-node-dev and was installed like a dev depedencie with `yarn add ts-node-dev -D`, so I run in terminal `ts-node-dev src/server.ts` and the server was started. Node doesn't understand typescript so the start script was not used and was removed, now to up the server in development I use ts-node-dev, but to made run more speed I created the script dev with the value `ts-node-dev --respawn --transpileOnly --ignore-watch node_modules --no-notify src/server.ts`, this params made the ts-node dev restart the server always that a file was change(--respawn), don't verify the types of typescript and just transpile to javascript(--transpileOnly), and ignore to see if some file was changed in node_modules. And now the server start with typescript.
+Now the project can was can use typescript, first was installed typescript like a dev depedencie with `yarn add typescript -D`, so I use `yarn tsc --init` to create a tsconfig.json (the file with the config of typescript). With typescript I added types in some parts of app, but the express doesn't have a type, so I install types of expresss with(like a dev depedencie to not go to production) `yarn add @types/express -D`, after to start the server I added a depedencie to run typescript, the depedencie is ts-node-dev and was installed like a dev depedencie with `yarn add ts-node-dev -D`, so I run in terminal `ts-node-dev src/server.ts` and the server was started. Node doesn't understand typescript so the start script was not used and was removed, now to up the server in development I use ts-node-dev, but to made run more speed I created the script dev with the value `ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts`, this params made the ts-node dev restart the server always that a file was change(--respawn), don't verify the types of typescript and just transpile to javascript(--transpile-only), and ignore to see if some file was changed in node_modules. And now the server start with typescript.
+
+## ESLint
+
+(5° Commit)
+
+Now the ESLint was added, the eslint serve to make a style guides in the code, I use the ESLint with the extension that auto formats the code to follow the style guide. To start you run in terminal `yarn eslint --init` and anwser the questions. In the ESLint I put to I anwser some questions and I use the style that I like, with indent of 4 space, using semicolon, using single quotes in string and using lf to break lines. With this my code can use a unique style guide. After answer some will be auto created the .eslintrc.json where estays the config of eslint. Some depedencies will be instaled, by default the eslint use npm, you can stop and install with yarn the listed depedencies or install with npm, delete package-lock.json and run `yarn` to update. After this, I update the tsconfig.json to stay like this:
+
+```json
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "lib": ["ES6"],
+        "allowJs": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "removeComments": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "src/@types"
+        ],
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+        "paths": {
+            "@controllers/*": ["./src/controllers/*"]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
+```
+
+So to finish I create the controllers in a folder controllers in src, I create a file called PingController.ts in this folder where I put this:
+```ts
+import { Request, Response } from 'express';
+
+class PingController {
+    public index(request: Request, response: Response): Response {
+        return response.json({
+            pong: true,
+        });
+    }
+}
+
+export default PingController;
+```
+
+And create a routes.ts file in src where I put this:
+
+```ts
+import { Router } from 'express';
+import PingController from '@controllers/PingController';
+
+const routes = Router();
+
+const pingController = new PingController();
+
+routes.get('/', pingController.index);
+
+export default routes;
+```
+
+So I import the routes in app file and a change the routes method to be:
+
+```ts
+private routes() {
+    this.express.use(routes);
+}
+```
+
+I have import the PingControllers with @controllers beacause I have used this lines in tsconfig.json:
+
+```json
+{
+    "baseUrl": ".",
+    "paths": {
+        "@controllers/*": ["./src/controllers/*"]
+    }
+}
+```
+
+I Have used but the ts-node-dev doesn't understand this, was because I install tsconfig-paths with `yarn add tsconfig-paths -D` and update the dev script to `ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts`,where -r run the resgister paths of the tsconfig-paths and you can use @controllers. After update you can run `yarn dev` and access `localhost:3333/ping` and the json may have be send to you.
+
+Now my develompent ambient use typescript, and style guide with eslint.
