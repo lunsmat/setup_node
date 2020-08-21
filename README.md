@@ -236,3 +236,48 @@ With this the jest will understand paths like @controllers. To finish, you can m
 ```
 
 So the ESLint not will look no one file with .js in the root folder of the project.
+
+## Babel
+
+Well, all works but the node doesn't understand typescript, just javascript, so you can use babel to transform all your code in typescript, to a code in javascript, after this you can use only node to run your app. To install all tools that you will need of babel you use `yarn add -D @babel/cli @babel/node @babel/preset-env @babel/preset-typescript babel-plugin-module-resolver`, again like a dev dependencie. Now to config the babel you have to create a file in root folder of the project, the name of the file has to be babel.config.js and you paste in the file:
+
+```js
+module.exports = {
+    presets: [
+        [
+            '@babel/preset-env',
+            {
+                targets: {
+                    node: 'current'
+                }
+            }
+        ],
+        '@babel/preset-typescript'
+    ],
+    plugins: [
+        ['module-resolver', {
+            alias: {
+                '@controllers': './src/controllers',
+            }
+        }]
+    ],
+    ignore: [
+        '**/*.spec.ts'
+    ]
+};
+```
+
+And finally the babel will be configured, now, to finish you have to create 2 scripts in your package.json, one to babel transform the code typescript in javascript, and another to node start the javascript, so added in package.json the scripts:
+
+```json
+{
+    "scripts": {
+        "start": "node dist/server.js",
+        "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
+        "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
+        "test": "jest"
+    }
+}
+```
+
+The dev and the jest we just have created, but the the build and the start you create now, the build run the babel to create a build in javascript in a folder called dist that will be in the root folder of your project, and the start the node to run the the the server created by the build, with this, your app will be started for production, just run build and run start. After this just add the dist folder where will be build in gitignore. And with this, all the development part will be finished, and now just start to code.
