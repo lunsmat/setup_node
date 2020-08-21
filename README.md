@@ -293,3 +293,33 @@ This template was used to create apps with node, but will be most used to create
 ```js
 this.app.use(cors());
 ```
+
+## DOTENV
+
+(9° Commit)
+
+Now we add dotenv, this is a depedencie to use environment variables into the project. To install, use `yarn add dotenv`, this depedencie has types, so we can use in typescript without add the types, with dotenv, insert this lines in top of your app.ts:
+
+```js
+import { config } from 'dotenv';
+config();
+```
+
+With this you can use envoriment variables in your project. First create a file called .env  in root folder of your project, inside this file you can put your envoriment variables. The envoriment variables some times are confidential(like api's key, or access to aws), so add to .gitignore, but to some one knows what variable you using, add a file called .env.example in your root folder where you put only the name of the variables.
+
+In production the port will be especified by a envoriment variable called port, so you can change your server to be like:
+
+
+```js
+import app from './app';
+
+app.listen(process.env.PORT || 3333);
+```
+
+If you run the app, you will run in 3333 port, but if you want to see if is working the envoirimets variable you have to stop the server and add to .env this:
+
+```
+PORT=3334
+```
+
+After this, start the server and if you acess localhost:3334/ping the app have to work.
