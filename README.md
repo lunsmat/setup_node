@@ -94,10 +94,7 @@ Now the ESLint was added, the eslint serve to make a style guides in the code, I
         "paths": {
             "@controllers/*": ["./src/controllers/*"]
         }
-    },
-    "include": [
-        "src/**/*"
-    ]
+    }
 }
 ```
 
@@ -152,4 +149,90 @@ I have import the PingControllers with @controllers beacause I have used this li
 
 I Have used but the ts-node-dev doesn't understand this, was because I install tsconfig-paths with `yarn add tsconfig-paths -D` and update the dev script to `ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts`,where -r run the resgister paths of the tsconfig-paths and you can use @controllers. After update you can run `yarn dev` and access `localhost:3333/ping` and the json may have be send to you.
 
-Now my develompent ambient use typescript, and style guide with eslint.
+Now my develompent envoiriment use typescript, and style guide with eslint.
+
+## Jest
+
+(6° Commit)
+
+Now to make tests in the app we will install jest, but this lib doesn't come with types, so you install the types with this lib, and to use typescript with jest you install the ts-jest lib, so you can install this like depedency of development by `yarn add jest @types/jest ts-jest -D`,  with this you have to init the jest, just run in terminal `yarn jest --init` and anwser the questions, I have answer with:
+
+- Would you like to use Jest when running "test" script in "package.json"? ... yes
+- Do you want Jest to add coverage reports? ... no
+- Which provider should be used to instrument code for coverage? » babel
+- Automatically clear mock calls and instances between every test? ... yes
+
+So the jest will create a file called jest.config.js, and add a script test in package.json. To test I install the supertest depedencie to dev  with `yarn add supertest -D`, so I create a folder test in scr and created the file ping.spec.ts inside the folder test, and in this folder I put:
+
+```ts
+import request from 'supertest';
+import app from '../app';
+
+test('It shoult be okay', async () => {
+    const response = await request(app).get('/ping');
+
+    expect(response.body).toMatchObject({ pong: true });
+});
+```
+
+This is a test to see if a request made to app with get method in /ping will be return the json with:
+
+```json
+{
+    "pong": true
+}
+```
+
+But until the jest doesn't understand typescript so I open the jest.config.js and search by preset, the line was commented and I uncommented the line and change to:
+
+```json
+{
+    "preset": "ts-jest"
+}
+```
+
+So I run `yarn test` and the test passed, so the jest was working. But the ESLint doesn't know who is jest, you can changing this in .eslintrc.json updating the env adding jest like true, the env will be like:
+
+```json
+{
+    "env": {
+        "es2020": true,
+        "node": true,
+        "jest": true
+    }
+}
+```
+
+Well, we just made a simple test with just. But jest doesn't understand the paths like @controllers that we made, so to jest understand this, in top of file jest.config.js paste this:
+
+```js
+const { compilerOptions } = require('./tsconfig.json');
+const { pathsToModuleNameMapper } = require('ts-jest/utils');
+```
+
+And to jest understand search by moduleNameMapper, will be commented, you have to uncomment and change the value to:
+
+```js
+{
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>' }),
+}
+```
+
+Now can works, but may the jest.config.js can not work because the you are requiring the tsconfig.json and you put that root dist in tsconfig.json was ./src, so to fix this, go to tsconfig.json and after the compilerOptions you add a include like:
+
+```json
+{
+    "compilerOption": {/**/},
+    "include": [
+        "src/**/*"
+    ]
+}
+```
+
+With this the jest will understand paths like @controllers. To finish, you can make the eslint ignore the file of config of the jest so you can make a file called .eslintignore in the root folder of the project and paste:
+
+```
+/*.js
+```
+
+So the ESLint not will look no one file with .js in the root folder of the project.
