@@ -239,6 +239,8 @@ So the ESLint not will look no one file with .js in the root folder of the proje
 
 ## Babel
 
+(7° Commit)
+
 Well, all works but the node doesn't understand typescript, just javascript, so you can use babel to transform all your code in typescript, to a code in javascript, after this you can use only node to run your app. To install all tools that you will need of babel you use `yarn add -D @babel/cli @babel/node @babel/preset-env @babel/preset-typescript babel-plugin-module-resolver`, again like a dev dependencie. Now to config the babel you have to create a file in root folder of the project, the name of the file has to be babel.config.js and you paste in the file:
 
 ```js
@@ -281,3 +283,13 @@ And finally the babel will be configured, now, to finish you have to create 2 sc
 ```
 
 The dev and the jest we just have created, but the the build and the start you create now, the build run the babel to create a build in javascript in a folder called dist that will be in the root folder of your project, and the start the node to run the the the server created by the build, with this, your app will be started for production, just run build and run start. After this just add the dist folder where will be build in gitignore. And with this, all the development part will be finished, and now just start to code.
+
+## CORS
+
+(8° Commit)
+
+This template was used to create apps with node, but will be most used to create api's, to allow access from api we will add the cors in the project. You can add cors by `yarn add cors`, note that we are not adding like a devdepedencie, this is because the cors will be used in production, so we are not add like dev depedencie. But cors doesn't have types to use with typescript, to fix this install types of cors with `yarn add @types/cors -D` and now is a dev Depedencie. With this import cors in app.ts file and add in the middlewares controller the line
+
+```js
+this.app.use(cors());
+```
