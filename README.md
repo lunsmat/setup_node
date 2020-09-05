@@ -70,6 +70,18 @@ To commit I ignore node_modules in .gitignore
 
 Now the project can was can use typescript, first was installed typescript like a dev depedencie with `yarn add typescript -D`, so I use `yarn tsc --init` to create a tsconfig.json (the file with the config of typescript). With typescript I added types in some parts of app, but the express doesn't have a type, so I install types of expresss with(like a dev depedencie to not go to production) `yarn add @types/express -D`, after to start the server I added a depedencie to run typescript, the depedencie is ts-node-dev and was installed like a dev depedencie with `yarn add ts-node-dev -D`, so I run in terminal `ts-node-dev src/server.ts` and the server was started. Node doesn't understand typescript so the start script was not used and was removed, now to up the server in development I use ts-node-dev, but to made run more speed I created the script dev with the value `ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts`, this params made the ts-node dev restart the server always that a file was change(--respawn), don't verify the types of typescript and just transpile to javascript(--transpile-only), and ignore to see if some file was changed in node_modules. And now the server start with typescript.
 
+You can add private to methods inside the class App in app.ts, and change your server.ts to be like:
+
+```ts
+import app from './app';
+
+const server = app.listen(app.get('port'), () => {
+    console.log(`🚀 Server running on the port ${Object(server.address()).port}`);
+});
+```
+
+You use Object because the return of server.adress() can be a object of type AdressInfo or can be a string, and only if you say that is a object you can get the port variable.
+
 ## ESLint
 
 (5° Commit)
