@@ -1,3 +1,5 @@
 import app from './app';
 
-app.listen(process.env.PORT || 3333);
+const server = app.listen(app.get('port'), () => {
+    console.log(`🚀 Server running on the port ${Object(server.address()).port}`);
+});

@@ -23,8 +23,13 @@ class App {
     constructor() {
         this.express = express();
 
+        this.appVars();
         this.middlewares();
         this.routes();
+    }
+
+    appVars() {
+        this.express.set('port', 3333);
     }
 
     middlewares() {
@@ -44,10 +49,12 @@ Here is the first app I made. To run the app I created a file caled server.js in
 ```js
 const app = require('./app');
 
-app.listen(3333);
+const server = app.listen(app.get('port'), () => {
+    console.log(`🚀 Server running on the port ${server.adress().port}`);
+});
 ```
 
-So finally just run `node src/server.js`, or run with script I made  with `yarn start`, and the app is on the air, the only route is `/ping`, so accessing `localhost:3333/ping`, you may revice the following json:
+So finally just run `node src/server.js`, or run with script I made  with `yarn start`, may have a log in terminal saying that server is running, and the app is on the air, the only route is `/ping`, so accessing `localhost:3333/ping`, you may revice the following json:
 
 ```json
 {
@@ -301,19 +308,18 @@ this.app.use(cors());
 Now we add dotenv, this is a depedencie to use environment variables into the project. To install, use `yarn add dotenv`, this depedencie has types, so we can use in typescript without add the types, with dotenv, insert this lines in top of your app.ts:
 
 ```js
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 ```
 
 With this you can use envoriment variables in your project. First create a file called .env  in root folder of your project, inside this file you can put your envoriment variables. The envoriment variables some times are confidential(like api's key, or access to aws), so add to .gitignore, but to some one knows what variable you using, add a file called .env.example in your root folder where you put only the name of the variables.
 
-In production the port will be especified by a envoriment variable called port, so you can change your server to be like:
+In production the port will be especified by a envoriment variable called port, so you can change your app, in the appVars method to be like:
 
 
 ```js
-import app from './app';
-
-app.listen(process.env.PORT || 3333);
+private appVars() {
+    this.express.set('port', process.env.PORT || 3333);
+}
 ```
 
 If you run the app, you will run in 3333 port, but if you want to see if is working the envoirimets variable you have to stop the server and add to .env this:
@@ -323,3 +329,7 @@ PORT=3334
 ```
 
 After this, start the server and if you acess localhost:3334/ping the app have to work.
+
+## Yarn Upgrade
+
+You don't have to do this, but in the end of the setup, I have used yarn upgrade to verify if the app works with the most recent versions of the depedencies, maybe if don't work, verify documentations of depedencies and the log to see what has change.

@@ -1,6 +1,4 @@
-import { config } from 'dotenv';
-config();
-
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 
@@ -11,8 +9,13 @@ class App {
     public constructor() {
         this.express = express();
 
+        this.appVars();
         this.middlewares();
         this.routes();
+    }
+
+    private appVars() {
+        this.express.set('port', process.env.PORT || 3333);
     }
 
     private middlewares() {
